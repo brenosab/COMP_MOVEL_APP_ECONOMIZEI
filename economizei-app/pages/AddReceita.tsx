@@ -10,6 +10,9 @@ import { ReceitaPage, Item } from '../domain/pages/index';
 import { Categoria } from '../domain/enums/index';
 import '@env';
 import DateInput from '../components/DateInput';
+import DecimalInput from '../components/DecimalInput';
+
+
 const { width } = Dimensions.get('window');
 const baseUrl = 'https://localhost:44368/';
 
@@ -26,7 +29,7 @@ const categorias: Item[] = [
   { id: 3, descricao: Categoria.LAZER }
 ];
 
-const AddAtleta = () => {
+const AddReceita = () => {
   const [form, setForm] = useState<ReceitaPage>(initForm);
   const post = useCallback((data: ReceitaPage) => {
     axios.post<Atleta>(baseUrl + ROUTE.API.ATLETAS, data)
@@ -60,20 +63,12 @@ const AddAtleta = () => {
   const onIncrement = () => post(form);
 
   return (
-    <SafeAreaView>
-  <View style={styles.getStartedContainer}>
-        <Text
-          style={styles.getStartedText}
-          lightColor="rgba(0,0,0,0.8)"
-          darkColor="rgba(255,255,255,0.8)">
-          Valor
-        </Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={setValor}
+    <SafeAreaView style={{ flex: 1, flexDirection: 'column' }}>
+      <View style={[styles.getStartedContainer, { flex: 3 }]}>
+        <DecimalInput
+          title='Valor'
           value={form.valor}
-          keyboardType="numeric"
-          maxLength={10}
+          setValue={(value) => setValor(value)}
         />
         <Text
           style={styles.getStartedText}
@@ -107,9 +102,9 @@ const AddAtleta = () => {
           setDate={(date) => setData(date)}
         />
       </View>
-      <View style={styles.getStartedContainer}>
+      <View style={[styles.getStartedContainer, { flex: 1 }]}>
         <Button
-          title="Cadastrar"
+          title="Adicionar"
           accessibilityLabel="increment"
           onPress={onIncrement}
           color="blue"
@@ -132,6 +127,13 @@ const styles = StyleSheet.create({
     margin: 10,
     borderWidth: 1,
     padding: 10,
+    textAlign: 'center',
+    borderRadius: 10,
+    borderColor: '#868686',
+    shadowColor: 'rgba(0, 0, 0, 0.25)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3
   },
   getStartedContainer: {
     alignItems: 'center',
@@ -162,4 +164,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddAtleta;
+export default AddReceita;

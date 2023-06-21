@@ -1,16 +1,20 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, StatusBar } from 'react-native';
 
 import EditScreenInfo from '../../components/EditScreenInfo';
 import { Text, View } from '../../components/Themed';
-import AddReceita from '../../pages/AddReceita';
+import AddDespesa from '../../pages/AddDespesa';
 
 export default function TabOneScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Cadastrar Receita</Text>
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>Cadastrar Despesa</Text>
+      </View>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <AddReceita />
-      <EditScreenInfo path="app/(tabs)/index.tsx" />
+
+      <View style={{ flex: 10 }}>
+        <AddDespesa /></View>
+      {/* <EditScreenInfo path="app/(tabs)/index.tsx" /> */}
     </View>
   );
 }
@@ -18,9 +22,15 @@ export default function TabOneScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 200,
+    paddingTop: StatusBar.currentHeight,
+  },
+  titleContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
   },
   title: {
     fontSize: 20,

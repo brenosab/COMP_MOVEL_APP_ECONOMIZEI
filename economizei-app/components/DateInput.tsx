@@ -54,6 +54,14 @@ const styles = StyleSheet.create({
     input: {
         height: 40,
         borderWidth: 1,
+        fontSize: 20,
+        textAlign: 'center',
+        borderRadius: 10,
+        borderColor: '#868686',
+        shadowColor: 'rgba(0, 0, 0, 0.25)',
+        shadowOffset: {width: 0, height: 4},
+        shadowOpacity: 0.25,
+        shadowRadius: 3
     },
     text: {
         fontSize: 25,
