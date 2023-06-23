@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Button, StyleSheet, TextInput, SafeAreaView, Dimensions } from 'react-native';
+import { Button, StyleSheet, TextInput, SafeAreaView, Dimensions, TouchableOpacity } from 'react-native';
 import { Text, View } from '../components/Themed';
 import Dropdown from '../components/Dropdown';
 import axios from 'axios';
@@ -11,6 +11,8 @@ import { Categoria } from '../domain/enums/index';
 import '@env';
 import DateInput from '../components/DateInput';
 import DecimalInput from '../components/DecimalInput';
+import FileInput from '../components/FileInput';
+import DocumentPicker, { DocumentPickerResponse } from 'react-native-document-picker';
 
 const { width } = Dimensions.get('window');
 
@@ -32,6 +34,8 @@ const categorias: Item[] = [
 
 const AddDespesa = () => {
   const [form, setForm] = useState<DespesaPage>(initForm);
+  const [currentFile, setCurrentFile] = useState<File>();
+  const [progress, setProgress] = useState<number>(0);
 
   const post = useCallback((data: DespesaPage) => {
     axios.post<Atleta>(baseUrl + ROUTE.API.ATLETAS, data)
@@ -68,6 +72,13 @@ const AddDespesa = () => {
 
   const onIncrement = () => post(form);
 
+  const selectFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { files } = event.target;
+    const selectedFiles = files as FileList;
+    setCurrentFile(selectedFiles?.[0]);
+    setProgress(0);
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, flexDirection: 'column' }}>
       <View style={[styles.getStartedContainer, { flex: 10 }]}>
@@ -103,11 +114,14 @@ const AddDespesa = () => {
           darkColor="rgba(255,255,255,0.8)">
           Anexo
         </Text>
-        <TextInput
+        <FileInput />
+
+        {/* <TextInput
           style={styles.input}
           onChangeText={setAnexo}
           value={form.anexo}
-        />
+        /> */}
+        
         <Text
           style={styles.getStartedText}
           lightColor="rgba(0,0,0,0.8)"
@@ -118,6 +132,7 @@ const AddDespesa = () => {
           date={new Date(form.data)}
           setDate={(date) => setData(date)}
         />
+
       </View>
       <View style={[styles.getStartedContainer, { flex: 1 }]}>
         <Button
@@ -148,7 +163,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderColor: '#868686',
     shadowColor: 'rgba(0, 0, 0, 0.25)',
-    shadowOffset: {width: 0, height: 4},
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 3
   },
@@ -178,6 +193,31 @@ const styles = StyleSheet.create({
   },
   helpLinkText: {
     textAlign: 'center',
+  },
+  buttonStyle: {
+    backgroundColor: '#307ecc',
+    borderWidth: 0,
+    color: '#FFFFFF',
+    borderColor: '#307ecc',
+    height: 40,
+    alignItems: 'center',
+    borderRadius: 30,
+    marginLeft: 35,
+    marginRight: 35,
+    marginTop: 15,
+  },
+  buttonTextStyle: {
+    color: '#FFFFFF',
+    paddingVertical: 10,
+    fontSize: 16,
+  },
+  button: {
+    backgroundColor: "#22252D",
+    borderRadius: 10,
+    margin: 6,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

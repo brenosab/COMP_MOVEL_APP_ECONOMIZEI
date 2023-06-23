@@ -20,4 +20,9 @@ export interface ReceitaPage {
 export interface Item {
     id: number;
     descricao: string;
-}
+};
+
+export default interface IFile {
+    url: string,
+    name: string,
+};
