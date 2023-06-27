@@ -41,8 +41,7 @@ const DecimalInput = (props: Props) => {
         // }
     };
 
-    return (
-            <View style={styles.MainContainer}>
+    return (<>
                 <Text
                     style={styles.getStartedText}
                     lightColor="rgba(0,0,0,0.8)"
@@ -55,8 +54,7 @@ const DecimalInput = (props: Props) => {
                     value={value}
                     maxLength={10}
                     keyboardType={'decimal-pad'}
-                />
-            </View>
+                /></>
     );
 }
 
@@ -68,8 +66,11 @@ const styles = StyleSheet.create({
     },
     input: {
         height: 40,
+        margin: 10,
+        padding: 10,
+        width: '95%',
         borderWidth: 1,
-        fontSize: 20,
+        fontSize: 17,
         textAlign: 'center',
         borderRadius: 10,
         borderColor: '#868686',

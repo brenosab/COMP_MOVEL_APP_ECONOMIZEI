@@ -4,18 +4,19 @@ import { Text, View } from '../components/Themed';
 import UploadService from "../services/FileUploadService";
 import IFile from "../domain/pages/index";
 
-const FileInput: React.FC = () => {
-    const [currentFile, setCurrentFile] = useState<File>();
+interface Props {
+    currentFile: File | undefined;
+    selectFile: (event: React.ChangeEvent<HTMLInputElement>) => void
+}
+const FileInput = (props: Props) => {
+    const {
+        currentFile,
+        selectFile,
+    } = props;
     const [progress, setProgress] = useState<number>(0);
     const [message, setMessage] = useState<string>("");
     const [fileInfos, setFileInfos] = useState<Array<IFile>>([]);
 
-    const selectFile = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const { files } = event.target;
-        const selectedFiles = files as FileList;
-        setCurrentFile(selectedFiles?.[0]);
-        setProgress(0);
-    };
     const upload = () => {
         setProgress(0);
         if (!currentFile) return;
@@ -32,18 +33,15 @@ const FileInput: React.FC = () => {
             })
             .catch((err) => {
                 setProgress(0);
-
                 if (err.response && err.response.data && err.response.data.message) {
                     setMessage(err.response.data.message);
                 } else {
                     setMessage("Could not upload the File!");
                 }
-
-                setCurrentFile(undefined);
+                //setCurrentFile(undefined);
             });
     };
     useEffect(() => {
-        console.log('testes');
         // UploadService.getFiles().then((response) => {
         //     setFileInfos(response.data);
         // });
@@ -52,13 +50,13 @@ const FileInput: React.FC = () => {
     return (
         <View style={styles.MainContainer}>
             <View style={styles.rows}>
-                <input type="file" accept="image/*" onChange={selectFile} />
+                <input type="file" accept="image/*" onChange={selectFile} style={styles.input} />
             </View>
-            <View style={[styles.rows]}>
+            {/* <View style={[styles.rows]}>
                 <Pressable style={styles.button} onPress={upload} disabled={!currentFile}>
                     <Text style={[styles.getStartedText, { color: 'white' }]}>Upload</Text>
                 </Pressable>
-            </View>
+            </View> */}
             {/* {currentFile && (
                 <div className="progress my-3">
                     <div
@@ -105,21 +103,19 @@ const styles = StyleSheet.create({
         borderColor: '#868686',
         borderWidth: 2,
         borderStyle: 'dotted',
-        padding: 5,
     },
     rows: {
-        flexDirection: 'row',
         flex: 1,
-        padding: 2,
-        alignItems: 'center',
         borderRadius: 10,
         borderColor: '#868686',
     },
     input: {
         height: 40,
+        margin: 10,
+        padding: 10,
+        width: '95%',
         borderWidth: 1,
-        fontSize: 20,
-        textAlign: 'center',
+        fontSize: 14,
         borderRadius: 10,
         borderColor: '#868686',
         shadowColor: 'rgba(0, 0, 0, 0.25)',

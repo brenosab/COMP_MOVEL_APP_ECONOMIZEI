@@ -1,17 +1,19 @@
 import React, { useCallback, useState } from 'react';
-import { Button, StyleSheet, TextInput, SafeAreaView, Dimensions } from 'react-native';
+import { Pressable, StyleSheet, TextInput, SafeAreaView, Dimensions } from 'react-native';
 import { Text, View } from '../components/Themed';
 import Dropdown from '../components/Dropdown';
 import axios from 'axios';
 import BaseModal from "../components/Modal";
 import { ROUTE } from "../constants/config";
-import { Atleta } from '../domain/api/index';
-import { ReceitaPage, Item } from '../domain/pages/index';
+import { ReceitaPage, Item, BaseModalState } from '../domain/pages/index';
 import { Categoria } from '../domain/enums/index';
 import '@env';
 import DateInput from '../components/DateInput';
 import DecimalInput from '../components/DecimalInput';
-
+import {
+  criarServicoDeValidacaoReceita,
+  esquemaDeValidacaoReceita,
+} from "./validation";
 
 const { width } = Dimensions.get('window');
 const baseUrl = 'https://localhost:44368/';
@@ -23,6 +25,11 @@ const initForm: ReceitaPage = {
   data: "2021-10-09",
   modalIsOpen: false,
 };
+const initModal: BaseModalState = {
+  message: "Adicionado!",
+  title: "",
+  modalIsOpen: false,
+};
 const categorias: Item[] = [
   { id: 1, descricao: Categoria.COMPRAS },
   { id: 2, descricao: Categoria.CONTA_FIXA },
@@ -31,16 +38,33 @@ const categorias: Item[] = [
 
 const AddReceita = () => {
   const [form, setForm] = useState<ReceitaPage>(initForm);
-  const post = useCallback((data: ReceitaPage) => {
-    axios.post<Atleta>(baseUrl + ROUTE.API.ATLETAS, data)
-      .then((res) => {
-        console.log(res);
-        setForm({ ...form, modalIsOpen: true });
+  const [modal, setModal] = useState<BaseModalState>(initModal);
+
+  const salvarReceita = useCallback((data: ReceitaPage) => {
+    const objValidacao = criarServicoDeValidacaoReceita(data);
+    esquemaDeValidacaoReceita
+      .validate(objValidacao)
+      .then((_) => {
+        console.log(data);
+        setModal({ ...modal, message: 'Receita Adicionada!', modalIsOpen: true });
+        setForm(initForm);
       })
       .catch((err) => {
-        console.log(err);
+        var msg: string = err.errors[0];
+        setModal({ ...modal, message: msg, modalIsOpen: true });
+        console.log(msg);
       });
-  }, [setForm, form]);
+
+    //**** MOCK API */
+    // axios.post<Atleta>(baseUrl + ROUTE.API.RECEITA, data)
+    //   .then((res) => {
+    //     console.log(res);
+    //     setForm({ ...form, modalIsOpen: true });
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
+  }, [setForm, setModal, modal]);
 
   const setValor = useCallback((props: string) => {
     setForm({ ...form, valor: props });
@@ -56,15 +80,15 @@ const AddReceita = () => {
     setForm({ ...form, descricao: props });
   }, [setForm, form]);
   const setModalVisible = useCallback((value: boolean) => {
-    setForm({ ...form, modalIsOpen: value });
+    setModal({ ...initModal, modalIsOpen: value });
   }, [setForm, form]);
 
 
-  const onIncrement = () => post(form);
+  const onIncrement = () => salvarReceita(form);
 
   return (
     <SafeAreaView style={{ flex: 1, flexDirection: 'column' }}>
-      <View style={[styles.getStartedContainer, { flex: 3 }]}>
+      <View style={[styles.getStartedContainer, { flex: 4 }]}>
         <DecimalInput
           title='Valor'
           value={form.valor}
@@ -103,17 +127,14 @@ const AddReceita = () => {
         />
       </View>
       <View style={[styles.getStartedContainer, { flex: 1 }]}>
-        <Button
-          title="Adicionar"
-          accessibilityLabel="increment"
-          onPress={onIncrement}
-          color="blue"
-        />
+        <Pressable style={styles.buttonSave} onPress={onIncrement}>
+          <Text style={styles.text}>{'Adicionar'}</Text>
+        </Pressable>
       </View>
       <BaseModal
-        message='feito!'
+        message={modal.message}
         title=''
-        modalIsOpen={form.modalIsOpen}
+        modalIsOpen={modal.modalIsOpen}
         setModalVisible={setModalVisible}
       />
     </SafeAreaView>
@@ -127,6 +148,7 @@ const styles = StyleSheet.create({
     margin: 10,
     borderWidth: 1,
     padding: 10,
+    fontSize: 17,
     textAlign: 'center',
     borderRadius: 10,
     borderColor: '#868686',
@@ -137,7 +159,7 @@ const styles = StyleSheet.create({
   },
   getStartedContainer: {
     alignItems: 'center',
-    marginHorizontal: 50,
+    marginHorizontal: 10,
   },
   homeScreenFilename: {
     marginVertical: 7,
@@ -161,6 +183,47 @@ const styles = StyleSheet.create({
   },
   helpLinkText: {
     textAlign: 'center',
+  },
+  buttonStyle: {
+    backgroundColor: '#307ecc',
+    borderWidth: 0,
+    color: '#FFFFFF',
+    borderColor: '#307ecc',
+    height: 40,
+    alignItems: 'center',
+    borderRadius: 30,
+    marginLeft: 35,
+    marginRight: 35,
+    marginTop: 15,
+  },
+  buttonTextStyle: {
+    color: '#FFFFFF',
+    paddingVertical: 10,
+    fontSize: 16,
+  },
+  button: {
+    backgroundColor: "#22252D",
+    borderRadius: 10,
+    margin: 6,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonSave: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 4,
+    elevation: 3,
+    backgroundColor: 'blue',
+  },
+  text: {
+    fontSize: 17,
+    lineHeight: 21,
+    fontWeight: 'bold',
+    letterSpacing: 0.25,
+    color: 'white',
   },
 });
 

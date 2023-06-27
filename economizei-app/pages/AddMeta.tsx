@@ -5,7 +5,7 @@ import Dropdown from '../components/Dropdown';
 import axios from 'axios';
 import BaseModal from "../components/Modal";
 import { ROUTE } from "../constants/config";
-import { DespesaPage, Item, BaseModalState } from '../domain/pages/index';
+import { MetaPage, Item, BaseModalState } from '../domain/pages/index';
 import { Categoria } from '../domain/enums/index';
 import '@env';
 import DateInput from '../components/DateInput';
@@ -13,19 +13,18 @@ import DecimalInput from '../components/DecimalInput';
 import FileInput from '../components/FileInput';
 import DocumentPicker, { DocumentPickerResponse } from 'react-native-document-picker';
 import {
-  criarServicoDeValidacao,
-  esquemaDeValidacao,
+  criarServicoDeValidacaoMeta,
+  esquemaDeValidacaoMeta,
 } from "./validation";
 
 const { width } = Dimensions.get('window');
 const baseUrl = 'https://localhost:44368/';
 
-const initForm: DespesaPage = {
+const initForm: MetaPage = {
   valor: "",
-  categoria: Categoria.COMPRAS,
   descricao: "",
-  data: "2021-10-09",
-  anexo: "",
+  titulo: "",
+  percentual: "0%",
   modalIsOpen: false,
 };
 const initModal: BaseModalState = {
@@ -39,18 +38,18 @@ const categorias: Item[] = [
   { id: 3, descricao: Categoria.LAZER }
 ];
 
-const AddDespesa = () => {
-  const [form, setForm] = useState<DespesaPage>(initForm);
+const AddMeta = () => {
+  const [form, setForm] = useState<MetaPage>(initForm);
   const [anexo, setAnexo] = useState<File | undefined>();
   const [modal, setModal] = useState<BaseModalState>(initModal);
 
-  const salvarDespesa = useCallback((data: DespesaPage) => {
-    const objValidacao = criarServicoDeValidacao(data);
-    esquemaDeValidacao
+  const salvarMeta = useCallback((data: MetaPage) => {
+    const objValidacao = criarServicoDeValidacaoMeta(data);
+    esquemaDeValidacaoMeta
       .validate(objValidacao)
       .then((_) => {
         console.log(data);
-        setModal({ ...modal, message: 'Despesa Adicionada!', modalIsOpen: true });
+        setModal({ ...modal, message: 'Meta Adicionada!', modalIsOpen: true });
         setForm(initForm);
       })
       .catch((err) => {
@@ -73,35 +72,48 @@ const AddDespesa = () => {
   const setValor = useCallback((props: string) => {
     setForm({ ...form, valor: props });
   }, [setForm, form]);
-  const setCategoria = useCallback((props: Item) => {
-    var _categoria: Categoria = props.descricao as Categoria;
-    setForm({ ...form, categoria: _categoria });
-  }, [setForm, form]);
-  const setData = useCallback((props: Date) => {
-    setForm({ ...form, data: props.toString() });
+  const setTitulo = useCallback((props: string) => {
+    setForm({ ...form, titulo: props });
   }, [setForm, form]);
   const setDescricao = useCallback((props: string) => {
     setForm({ ...form, descricao: props });
   }, [setForm, form]);
-  // const setAnexo = useCallback((props: string) => {
-  //   setForm({ ...form, anexo: props });
-  // }, [setForm, form]);
+  const setPercentual = useCallback((props: string) => {
+    setForm({ ...form, percentual: props });
+  }, [setForm, form]);
   const setModalVisible = useCallback((value: boolean) => {
     setModal({ ...initModal, modalIsOpen: value });
   }, [setForm, form]);
 
-  const onIncrement = () => salvarDespesa(form);
-
-  const selectFile = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { files } = event.target;
-    const selectedFiles = files as FileList;
-    setAnexo(selectedFiles?.[0]);
-    setForm({ ...form, anexo: selectedFiles?.[0].name.toString() });
-  };
+  const onIncrement = () => salvarMeta(form);
 
   return (
     <SafeAreaView style={{ flex: 1, flexDirection: 'column' }}>
       <View style={[styles.getStartedContainer, { flex: 10 }]}>
+        <Text
+          style={styles.getStartedText}
+          lightColor="rgba(0,0,0,0.8)"
+          darkColor="rgba(255,255,255,0.8)">
+          Título
+        </Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={setTitulo}
+          value={form.titulo}
+        />
+        <Text
+          style={styles.getStartedText}
+          lightColor="rgba(0,0,0,0.8)"
+          darkColor="rgba(255,255,255,0.8)">
+          Descrição
+        </Text>
+        <TextInput
+          style={[styles.input, { height: '80' }]}
+          onChangeText={setDescricao}
+          value={form.descricao}
+          multiline={true}
+          numberOfLines={2}
+        />
         <DecimalInput
           title='Valor'
           value={form.valor}
@@ -111,51 +123,13 @@ const AddDespesa = () => {
           style={styles.getStartedText}
           lightColor="rgba(0,0,0,0.8)"
           darkColor="rgba(255,255,255,0.8)">
-          Descrição
+          Percentual
         </Text>
         <TextInput
-          style={styles.input}
-          onChangeText={setDescricao}
-          value={form.descricao}
+          editable={false}
+          style={[styles.input, { backgroundColor: '#E8E8E8' }]}
+          value={form.percentual}
         />
-        <Text
-          style={styles.getStartedText}
-          lightColor="rgba(0,0,0,0.8)"
-          darkColor="rgba(255,255,255,0.8)">
-          Categoria
-        </Text>
-        <Dropdown
-          items={categorias}
-          setItem={setCategoria}
-        />
-        <Text
-          style={styles.getStartedText}
-          lightColor="rgba(0,0,0,0.8)"
-          darkColor="rgba(255,255,255,0.8)">
-          Anexo
-        </Text>
-        <FileInput
-          currentFile={anexo}
-          selectFile={selectFile}
-        />
-
-        {/* <TextInput
-          style={styles.input}
-          onChangeText={setAnexo}
-          value={form.anexo}
-        /> */}
-
-        <Text
-          style={styles.getStartedText}
-          lightColor="rgba(0,0,0,0.8)"
-          darkColor="rgba(255,255,255,0.8)">
-          Data
-        </Text>
-        <DateInput
-          date={new Date(form.data)}
-          setDate={(date) => setData(date)}
-        />
-
       </View>
       <View style={[styles.getStartedContainer, { flex: 1 }]}>
         <Pressable style={styles.buttonSave} onPress={onIncrement}>
@@ -258,4 +232,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddDespesa;
+export default AddMeta;

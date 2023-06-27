@@ -38,7 +38,7 @@ const DateInput = (props: Props) => {
                         onPressIn={() => setShowDatePicker(true)}
                         keyboardType="numeric"
                     />
-                    <Button title="Selecionar Data" color="blue" onPress={() => setShowDatePicker(true)} />
+                    <Button title="Selecionar Data" color="gray" onPress={() => setShowDatePicker(true)} />
                 </View>
             </View>
         </SafeAreaView>

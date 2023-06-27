@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     borderColor: '#444',
     margin: 6,
   },
-  dropdown1BtnTxtStyle: { color: '#444', textAlign: 'left' },
+  dropdown1BtnTxtStyle: { color: '#444', textAlign: 'center', fontSize: 17 },
   dropdown1DropdownStyle: { backgroundColor: '#EFEFEF' },
   dropdown1RowStyle: { backgroundColor: '#EFEFEF', borderBottomColor: '#C5C5C5' },
   dropdown1RowTxtStyle: { color: '#444', textAlign: 'left' },
