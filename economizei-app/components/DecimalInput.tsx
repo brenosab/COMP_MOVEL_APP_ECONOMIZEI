@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, TextInput } from 'react-native';
 import { Text, View } from '../components/Themed';
+import CurrencyInput from 'react-native-currency-input';
+import { formatNumber } from 'react-native-currency-input';
 
 interface Props {
     title: string;
-    value: string;
-    setValue: (props: string) => void;
+    value: number;
+    setValue: (props: number) => void;
 }
 const DecimalInput = (props: Props) => {
     const {
@@ -13,8 +15,9 @@ const DecimalInput = (props: Props) => {
         value,
         setValue,
     } = props;
+    const [number, setNumber] = useState(2310.458);
 
-    const [number, setNumber] = useState('');
+    //const [value, setValue] = React.useState(2310.458); // can also be null
 
     const convertStringToFloat = (value: string) => {
         const decimals = parseInt(value.slice(-2));
@@ -22,11 +25,9 @@ const DecimalInput = (props: Props) => {
         return parseFloat(integer + '.' + decimals);
     }
 
-    const onValueSelected = (text: string) => {
+    const onValueSelected = (text: number) => {
         //console.log(value);
-
         setValue(text);
-
         // const lastCharacter = parseInt(text.slice(-1));
         // console.log(text);
         // if(Number.isInteger(lastCharacter)){
@@ -40,21 +41,47 @@ const DecimalInput = (props: Props) => {
         //     setNumber(text);
         // }
     };
+    const formattedValue = formatNumber(value, {
+        separator: ',',
+        precision: 2,
+        delimiter: '.',
+        ignoreNegative: true,
+    });
 
-    return (<>
-                <Text
-                    style={styles.getStartedText}
-                    lightColor="rgba(0,0,0,0.8)"
-                    darkColor="rgba(255,255,255,0.8)">
-                    {title}
-                </Text>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={onValueSelected}
-                    value={value}
-                    maxLength={10}
-                    keyboardType={'decimal-pad'}
-                /></>
+    return (
+        <>
+            <Text
+                style={styles.getStartedText}
+                lightColor="rgba(0,0,0,0.8)"
+                darkColor="rgba(255,255,255,0.8)">
+                {title}
+            </Text>
+            <CurrencyInput
+                value={value}
+                onChangeValue={setValue}
+                unit="$"
+                delimiter=","
+                separator="."
+                precision={2}
+                onChangeText={(formattedValue) => {
+                    console.log(formattedValue); // $2,310.46
+                }}
+                style={styles.input}
+            />
+            {/* <Text
+                style={styles.getStartedText}
+                lightColor="rgba(0,0,0,0.8)"
+                darkColor="rgba(255,255,255,0.8)">
+                {title}
+            </Text>
+            <TextInput
+                style={styles.input}
+                onChangeText={onValueSelected}
+                value={value}
+                maxLength={10}
+                keyboardType={'decimal-pad'}
+            /> */}
+        </>
     );
 }
 

@@ -17,11 +17,8 @@ import {
   esquemaDeValidacaoMeta,
 } from "./validation";
 
-const { width } = Dimensions.get('window');
-const baseUrl = 'https://localhost:44368/';
-
 const initForm: MetaPage = {
-  valor: "",
+  valor: 0.00,
   descricao: "",
   titulo: "",
   percentual: "0%",
@@ -69,7 +66,7 @@ const AddMeta = () => {
     //   });
   }, [setForm, setModal, modal]);
 
-  const setValor = useCallback((props: string) => {
+  const setValor = useCallback((props: number) => {
     setForm({ ...form, valor: props });
   }, [setForm, form]);
   const setTitulo = useCallback((props: string) => {
@@ -88,8 +85,8 @@ const AddMeta = () => {
   const onIncrement = () => salvarMeta(form);
 
   return (
-    <SafeAreaView style={{ flex: 1, flexDirection: 'column' }}>
-      <View style={[styles.getStartedContainer, { flex: 10 }]}>
+    <SafeAreaView style={styles.container}>
+      <View style={[styles.getStartedContainer, { flex: 5 }]}>
         <Text
           style={styles.getStartedText}
           lightColor="rgba(0,0,0,0.8)"
@@ -108,7 +105,7 @@ const AddMeta = () => {
           Descrição
         </Text>
         <TextInput
-          style={[styles.input, { height: '80' }]}
+          style={[styles.input, { height: 80 }]}
           onChangeText={setDescricao}
           value={form.descricao}
           multiline={true}
@@ -145,8 +142,14 @@ const AddMeta = () => {
     </SafeAreaView>
   );
 }
-
+const dimScreen = Dimensions.get("screen");
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+    width: dimScreen.width,
+    height: dimScreen.height,
+  },
   input: {
     width: '95%',
     height: 40,
@@ -164,7 +167,7 @@ const styles = StyleSheet.create({
   },
   getStartedContainer: {
     alignItems: 'center',
-    marginHorizontal: 10,
+    marginHorizontal: 20,
   },
   homeScreenFilename: {
     marginVertical: 7,

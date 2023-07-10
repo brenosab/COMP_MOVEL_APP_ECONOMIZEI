@@ -52,43 +52,6 @@ const FileInput = (props: Props) => {
             <View style={styles.rows}>
                 <input type="file" accept="image/*" onChange={selectFile} style={styles.input} />
             </View>
-            {/* <View style={[styles.rows]}>
-                <Pressable style={styles.button} onPress={upload} disabled={!currentFile}>
-                    <Text style={[styles.getStartedText, { color: 'white' }]}>Upload</Text>
-                </Pressable>
-            </View> */}
-            {/* {currentFile && (
-                <div className="progress my-3">
-                    <div
-                        className="progress-bar progress-bar-info"
-                        role="progressbar"
-                        aria-valuenow={progress}
-                        aria-valuemin={0}
-                        aria-valuemax={100}
-                        style={{ width: progress + "%" }}
-                    >
-                        {progress}%
-                    </div>
-                </div>
-            )}
-            {message && (
-                <div className="alert alert-secondary mt-3" role="alert">
-                    {message}
-                </div>
-            )} */}
-            {/* <View style={styles.rows}>
-                <div className="card mt-3">
-                    <div className="card-header">List of Files</div>
-                    <ul className="list-group list-group-flush">
-                        {fileInfos &&
-                            fileInfos.map((file, index) => (
-                                <li className="list-group-item" key={index}>
-                                    <a href={file.url}>{file.name}</a>
-                                </li>
-                            ))}
-                    </ul>
-                </div>
-            </View> */}
         </View>
     );
 };

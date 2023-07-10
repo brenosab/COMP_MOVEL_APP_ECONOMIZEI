@@ -19,7 +19,7 @@ const { width } = Dimensions.get('window');
 const baseUrl = 'https://localhost:44368/';
 
 const initForm: ReceitaPage = {
-  valor: "",
+  valor: 0.00,
   categoria: Categoria.COMPRAS,
   descricao: "",
   data: "2021-10-09",
@@ -66,7 +66,7 @@ const AddReceita = () => {
     //   });
   }, [setForm, setModal, modal]);
 
-  const setValor = useCallback((props: string) => {
+  const setValor = useCallback((props: number) => {
     setForm({ ...form, valor: props });
   }, [setForm, form]);
   const setCategoria = useCallback((props: Item) => {
@@ -88,7 +88,7 @@ const AddReceita = () => {
 
   return (
     <SafeAreaView style={{ flex: 1, flexDirection: 'column' }}>
-      <View style={[styles.getStartedContainer, { flex: 4 }]}>
+      <View style={[styles.getStartedContainer, { flex: 6 }]}>
         <DecimalInput
           title='Valor'
           value={form.valor}
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
   },
   getStartedContainer: {
     alignItems: 'center',
-    marginHorizontal: 10,
+    marginHorizontal: 20,
   },
   homeScreenFilename: {
     marginVertical: 7,

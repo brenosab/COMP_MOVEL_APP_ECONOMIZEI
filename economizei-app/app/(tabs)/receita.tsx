@@ -1,10 +1,10 @@
-import { StyleSheet, StatusBar } from 'react-native';
+import { StyleSheet, StatusBar, Dimensions } from 'react-native';
 
 import EditScreenInfo from '../../components/EditScreenInfo';
 import { Text, View } from '../../components/Themed';
 import AddReceita from '../../pages/AddReceita';
 
-export default function TabTwoScreen() {
+export default function TabReceitaScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
@@ -14,17 +14,15 @@ export default function TabTwoScreen() {
       <View style={{ flex: 10 }}>
         <AddReceita />
       </View>
-      {/* <EditScreenInfo path="app/(tabs)/two.tsx" /> */}
     </View>
   );
 }
-
+const dimScreen = Dimensions.get("screen");
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: StatusBar.currentHeight,
+    width: dimScreen.width,
+    height: dimScreen.height,
   },
   titleContainer: {
     flex: 1,

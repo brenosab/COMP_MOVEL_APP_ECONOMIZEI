@@ -1,27 +1,21 @@
 import React, { useCallback, useState } from 'react';
-import { Pressable, StyleSheet, TextInput, SafeAreaView, Dimensions, TouchableOpacity } from 'react-native';
+import { Pressable, StyleSheet, TextInput, SafeAreaView, Dimensions } from 'react-native';
 import { Text, View } from '../components/Themed';
 import Dropdown from '../components/Dropdown';
-import axios from 'axios';
 import BaseModal from "../components/Modal";
-import { ROUTE } from "../constants/config";
 import { DespesaPage, Item, BaseModalState } from '../domain/pages/index';
 import { Categoria } from '../domain/enums/index';
 import '@env';
 import DateInput from '../components/DateInput';
 import DecimalInput from '../components/DecimalInput';
 import FileInput from '../components/FileInput';
-import DocumentPicker, { DocumentPickerResponse } from 'react-native-document-picker';
 import {
   criarServicoDeValidacao,
   esquemaDeValidacao,
 } from "./validation";
 
-const { width } = Dimensions.get('window');
-const baseUrl = 'https://localhost:44368/';
-
 const initForm: DespesaPage = {
-  valor: "",
+  valor: 0.00,
   categoria: Categoria.COMPRAS,
   descricao: "",
   data: "2021-10-09",
@@ -70,7 +64,7 @@ const AddDespesa = () => {
     //   });
   }, [setForm, setModal, modal]);
 
-  const setValor = useCallback((props: string) => {
+  const setValor = useCallback((props: number) => {
     setForm({ ...form, valor: props });
   }, [setForm, form]);
   const setCategoria = useCallback((props: Item) => {
@@ -100,8 +94,8 @@ const AddDespesa = () => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, flexDirection: 'column' }}>
-      <View style={[styles.getStartedContainer, { flex: 10 }]}>
+    <SafeAreaView style={styles.container}>
+      <View style={[styles.getStartedContainer, { flex: 6 }]}>
         <DecimalInput
           title='Valor'
           value={form.valor}
@@ -134,17 +128,10 @@ const AddDespesa = () => {
           darkColor="rgba(255,255,255,0.8)">
           Anexo
         </Text>
-        <FileInput
+        {/* <FileInput
           currentFile={anexo}
           selectFile={selectFile}
-        />
-
-        {/* <TextInput
-          style={styles.input}
-          onChangeText={setAnexo}
-          value={form.anexo}
         /> */}
-
         <Text
           style={styles.getStartedText}
           lightColor="rgba(0,0,0,0.8)"
@@ -155,7 +142,6 @@ const AddDespesa = () => {
           date={new Date(form.data)}
           setDate={(date) => setData(date)}
         />
-
       </View>
       <View style={[styles.getStartedContainer, { flex: 1 }]}>
         <Pressable style={styles.buttonSave} onPress={onIncrement}>
@@ -171,8 +157,14 @@ const AddDespesa = () => {
     </SafeAreaView>
   );
 }
-
+const dimScreen = Dimensions.get("screen");
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+    width: dimScreen.width,
+    height: dimScreen.height,
+  },
   input: {
     width: '95%',
     height: 40,
@@ -190,7 +182,7 @@ const styles = StyleSheet.create({
   },
   getStartedContainer: {
     alignItems: 'center',
-    marginHorizontal: 10,
+    marginHorizontal: 20,
   },
   homeScreenFilename: {
     marginVertical: 7,

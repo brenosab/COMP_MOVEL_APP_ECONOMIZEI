@@ -1,5 +1,11 @@
 import { Categoria } from '../enums/index';
 
+export type RootStackParamList = {
+    'home': undefined;
+    'perfil': undefined;
+    'header': undefined;
+};
+
 export interface BaseModalState {
     message: string;
     title: string;
@@ -7,7 +13,7 @@ export interface BaseModalState {
 }
 
 export interface MetaPage {
-    valor: string;
+    valor: number;
     titulo: string;
     descricao: string;
     percentual: string;
@@ -21,7 +27,7 @@ export interface PlanoEconomiaPage {
 }
 
 export interface DespesaPage {
-    valor: string;
+    valor: number;
     categoria: Categoria;
     data: string;
     descricao: string;
@@ -30,7 +36,7 @@ export interface DespesaPage {
 };
 
 export interface ReceitaPage {
-    valor: string;
+    valor: number;
     categoria: Categoria;
     data: string;
     descricao: string;

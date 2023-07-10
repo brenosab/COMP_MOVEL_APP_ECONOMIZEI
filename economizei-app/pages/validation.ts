@@ -1,21 +1,20 @@
-import { object, Schema, string } from "yup";
+import { number, object, Schema, string } from "yup";
 import { DespesaPage, ReceitaPage, MetaPage } from '../domain/pages/index';
 
 interface DespesaValidationSchema {
-  valor: string;
+  valor: number;
   categoria: string;
   descricao: string;
   data: string;
-  anexo: string;
 }
 interface ReceitaValidationSchema {
-  valor: string;
+  valor: number;
   categoria: string;
   descricao: string;
   data: string;
 }
 interface MetaValidationSchema {
-  valor: string;
+  valor: number;
   titulo: string;
   descricao: string;
   percentual: string;
@@ -31,18 +30,15 @@ export const esquemaDeValidacao: Schema<DespesaValidationSchema> = object({
   descricao: string()
     .required("Campo 'descricao' é obrigatório")
     .max(250, "Quantidade de caracteres excedida no campo 'descricao'"),
-  valor: string()
-    .required("Campo 'valor' é obrigatório")
-    .matches(
-      new RegExp("[0-9]", "g"),
-      "Campo 'valor' deve ser um número"
-    ),
+  valor: number()
+    .required("Campo 'valor' é obrigatório"),
+  // .matches(
+  //   new RegExp("[0-9]", "g"),
+  //   "Campo 'valor' deve ser um número"
+  // ),
   categoria: string()
     .required("Campo 'categoria' é obrigatório")
     .max(250, "Quantidade de caracteres excedida no campo 'categoria'"),
-  anexo: string()
-    .required("Campo 'anexo' é obrigatório")
-    .max(250, "Quantidade de caracteres excedida no campo 'anexo'"),
 });
 
 export const criarServicoDeValidacao = (
@@ -53,7 +49,6 @@ export const criarServicoDeValidacao = (
     descricao: despesa.descricao,
     categoria: despesa.categoria,
     data: despesa.data,
-    anexo: despesa.anexo,
   };
 };
 
@@ -67,12 +62,12 @@ export const esquemaDeValidacaoReceita: Schema<ReceitaValidationSchema> = object
   descricao: string()
     .required("Campo 'descricao' é obrigatório")
     .max(250, "Quantidade de caracteres excedida no campo 'descricao'"),
-  valor: string()
-    .required("Campo 'valor' é obrigatório")
-    .matches(
-      new RegExp("[0-9]", "g"),
-      "Campo 'valor' deve ser um número"
-    ),
+  valor: number()
+    .required("Campo 'valor' é obrigatório"),
+  // .matches(
+  //   new RegExp("[0-9]", "g"),
+  //   "Campo 'valor' deve ser um número"
+  // ),
   categoria: string()
     .required("Campo 'categoria' é obrigatório")
     .max(250, "Quantidade de caracteres excedida no campo 'categoria'"),
@@ -98,13 +93,13 @@ export const esquemaDeValidacaoMeta: Schema<MetaValidationSchema> = object({
   descricao: string()
     .required("Campo 'Descrição' é obrigatório")
     .max(250, "Quantidade de caracteres excedida no campo 'descricao'"),
-  valor: string()
-    .required("Campo 'Valor' é obrigatório")
-    .matches(
-      new RegExp("[0-9]", "g"),
-      "Campo 'valor' deve ser um número"
-    ),
-    percentual: string()
+  valor: number()
+    .required("Campo 'valor' é obrigatório"),
+  // .matches(
+  //   new RegExp("[0-9]", "g"),
+  //   "Campo 'valor' deve ser um número"
+  // ),
+  percentual: string()
     .required("Campo 'Percentual' é obrigatório")
     .max(10, "Quantidade de caracteres excedida no campo 'percentual'"),
 });
