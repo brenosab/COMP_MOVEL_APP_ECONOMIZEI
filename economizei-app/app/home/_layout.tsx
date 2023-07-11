@@ -1,15 +1,13 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link, Tabs } from 'expo-router';
-import { Pressable, useColorScheme, SafeAreaView, StyleSheet, Dimensions } from 'react-native';
+import { SafeAreaView, StyleSheet, Dimensions } from 'react-native';
 import { Text, View } from '../../components/Themed';
-import Colors from '../../constants/Colors';
-import Header from '../header/index';
 import { Feather } from '@expo/vector-icons';
 import http from "../../http-common";
-import { AxiosResponse } from 'axios';
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { BaseModalState } from '../../domain/pages/index';
 import BaseModal from "../../components/Modal";
+import { TypeValue } from '../../domain/enums/index';
+import { ROUTE } from "../../constants/config";
+import { useIsFocused } from "@react-navigation/native";
 
 const initModal: BaseModalState = {
   message: "Ok!",
@@ -18,20 +16,41 @@ const initModal: BaseModalState = {
 };
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
   const [modal, setModal] = useState<BaseModalState>(initModal);
+  const [sumDespesa, setSumDespesa] = useState<number>(0.00);
+  const [sumReceita, setSumReceita] = useState<number>(0.00);
+  const isFocused = useIsFocused();
 
-  const getInfo = useCallback(() => {
-    var response: Promise<any> = http.get("/");
+  useEffect(() => {
+    getSumDespesa();
+    getSumReceita();
+    console.log('teste');
+  }, [isFocused]);
+
+  const getSumDespesa = useCallback(() => {
+    var response: Promise<any> = http.get("/" + ROUTE.API.DESPESA + "/sum");
     response.then((res) => {
-      console.log(res.data);
-      setModal({ ...modal, message: res.data.title, modalIsOpen: true });
+      let valor = res.data[0]?.valor == undefined ? 0.00 : res.data[0]?.valor;
+      console.log(valor);
+      setSumDespesa(valor);
     })
       .catch((err) => {
         console.log(err);
       });
-  }, [modal]);
-  
+  }, [setSumDespesa]);
+
+  const getSumReceita = useCallback(() => {
+    var response: Promise<any> = http.get("/" + ROUTE.API.RECEITA + "/sum");
+    response.then((res) => {
+      let valor = res.data[0]?.valor == undefined ? 0.00 : res.data[0]?.valor;
+      console.log(valor);
+      setSumReceita(valor);
+    })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [setSumReceita]);
+
   const setModalVisible = useCallback((value: boolean) => {
     setModal({ ...initModal, modalIsOpen: value });
   }, []);
@@ -46,7 +65,7 @@ export default function TabLayout() {
                 <Feather style={styles.menuIcon} name='plus' size={24} color="white" />
               </View>
               <View style={[styles.boxField, { flex: 4 }]}>
-                <Text style={[styles.text]}>R$ 100,00</Text>
+                <Text style={[styles.text]}>{sumReceita}</Text>
               </View>
             </View>
             <View style={[styles.row, { borderWidth: 1, borderColor: "thistle" }]}>
@@ -54,7 +73,7 @@ export default function TabLayout() {
                 <Feather style={styles.menuIcon} name='minus' size={24} color="white" />
               </View>
               <View style={[styles.boxField, { flex: 4 }]}>
-                <Text style={[styles.text]}>R$ 20,00</Text>
+                <Text style={[styles.text]}>{sumDespesa}</Text>
               </View>
             </View>
           </View>
@@ -64,11 +83,11 @@ export default function TabLayout() {
             <Text style={[styles.text]}>DashBoards</Text>
           </View>
         </View>
-        <View style={[styles.getStartedContainer, { flex: 2 }]}>
+        {/* <View style={[styles.getStartedContainer, { flex: 2 }]}>
           <Pressable style={styles.buttonSave} onPress={getInfo}>
             <Text style={[styles.text, { color: 'white' }]}>{'Adicionar'}</Text>
           </Pressable>
-        </View>
+        </View> */}
       </View>
       <BaseModal
         message={modal.message}
@@ -80,7 +99,7 @@ export default function TabLayout() {
   );
 }
 
-const dimScreen= Dimensions.get("screen");
+const dimScreen = Dimensions.get("screen");
 const styles = StyleSheet.create({
   main: {
     flexDirection: 'column',

@@ -13,6 +13,8 @@ import {
   criarServicoDeValidacao,
   esquemaDeValidacao,
 } from "./validation";
+import http from "../http-common";
+import { ROUTE } from "../constants/config";
 
 const initForm: DespesaPage = {
   valor: 0.00,
@@ -38,12 +40,26 @@ const AddDespesa = () => {
   const [anexo, setAnexo] = useState<File | undefined>();
   const [modal, setModal] = useState<BaseModalState>(initModal);
 
+  const post = (data: DespesaPage) => {
+    var response: Promise<any> = http.post("/"+ ROUTE.API.DESPESA, data);
+    response.then((res) => {
+      console.log(res.data);
+      return res.data;
+    })
+      .catch((err) => {
+        console.log(err);
+        return err;
+      });
+  };
+
   const salvarDespesa = useCallback((data: DespesaPage) => {
     const objValidacao = criarServicoDeValidacao(data);
     esquemaDeValidacao
       .validate(objValidacao)
       .then((_) => {
         console.log(data);
+        var response = post(data);
+        console.log(response);
         setModal({ ...modal, message: 'Despesa Adicionada!', modalIsOpen: true });
         setForm(initForm);
       })

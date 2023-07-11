@@ -14,9 +14,7 @@ import {
   criarServicoDeValidacaoReceita,
   esquemaDeValidacaoReceita,
 } from "./validation";
-
-const { width } = Dimensions.get('window');
-const baseUrl = 'https://localhost:44368/';
+import http from "../http-common";
 
 const initForm: ReceitaPage = {
   valor: 0.00,
@@ -40,12 +38,26 @@ const AddReceita = () => {
   const [form, setForm] = useState<ReceitaPage>(initForm);
   const [modal, setModal] = useState<BaseModalState>(initModal);
 
+  const post = (data: ReceitaPage) => {
+    var response: Promise<any> = http.post("/"+ ROUTE.API.RECEITA, data);
+    response.then((res) => {
+      console.log(res.data);
+      return res.data;
+    })
+      .catch((err) => {
+        console.log(err);
+        return err;
+      });
+  };
+
   const salvarReceita = useCallback((data: ReceitaPage) => {
     const objValidacao = criarServicoDeValidacaoReceita(data);
     esquemaDeValidacaoReceita
       .validate(objValidacao)
       .then((_) => {
         console.log(data);
+        var response = post(data);
+        console.log(response);
         setModal({ ...modal, message: 'Receita Adicionada!', modalIsOpen: true });
         setForm(initForm);
       })

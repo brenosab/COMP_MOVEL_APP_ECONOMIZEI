@@ -31,7 +31,8 @@ export const esquemaDeValidacao: Schema<DespesaValidationSchema> = object({
     .required("Campo 'descricao' é obrigatório")
     .max(250, "Quantidade de caracteres excedida no campo 'descricao'"),
   valor: number()
-    .required("Campo 'valor' é obrigatório"),
+    .required("Campo 'valor' é obrigatório")
+    .min(1,"Campo 'valor' é obrigatório"),
   // .matches(
   //   new RegExp("[0-9]", "g"),
   //   "Campo 'valor' deve ser um número"

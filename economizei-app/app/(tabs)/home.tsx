@@ -12,7 +12,6 @@ export default function TabHomeScreen() {
       <View style={{ flex: 1, justifyContent: 'flex-start' }}>
         <TabLayout />
       </View>
-      {/* <EditScreenInfo path="app/(tabs)/two.tsx" /> */}
     </View>
     </SafeAreaView>
   );

@@ -14,3 +14,7 @@ export enum Categoria {
     CONTA_FIXA = "Conta Fixa",
     LAZER = "Lazer",
 };
+export enum TypeValue {
+    DESPESA = "despesa",
+    RECEITA = "receita"
+};
