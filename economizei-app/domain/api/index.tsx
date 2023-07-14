@@ -1,14 +1,8 @@
-export interface Exercicio {
+export interface ItemApi {
+    valor: number;
+    categoria: string;
+    data: string;
     descricao: string;
-    idMusculo: number;
-};
-
-export interface Atleta {
-    nome: string;
-    dataNascimento: Date;
-    altura: number;
-    sexo: string;
-    pesoAtual: number;
 };
 
 export interface Categoria {

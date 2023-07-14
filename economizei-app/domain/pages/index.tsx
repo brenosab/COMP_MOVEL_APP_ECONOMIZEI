@@ -1,10 +1,5 @@
 import { Categoria } from '../enums/index';
-
-export type RootStackParamList = {
-    'home': undefined;
-    'perfil': undefined;
-    'header': undefined;
-};
+import { ItemApi } from '../api/index';
 
 export interface BaseModalState {
     message: string;
@@ -48,7 +43,22 @@ export interface Item {
     descricao: string;
 };
 
-export default interface IFile {
+export interface IFile {
     url: string,
     name: string,
+};
+
+export interface FormProps {
+    list: ItemApi[];
+    title: string;
+    isOpen: boolean;
+};
+
+export type RootStackParamList = {
+    'Home': {},
+    'Form': {
+      list: ItemApi[],
+      title: string,
+      isOpen: boolean
+    };
 };

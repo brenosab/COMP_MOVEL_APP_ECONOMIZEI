@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { SafeAreaView, StyleSheet, TextInput, Pressable } from 'react-native';
-import { Text, View } from '../components/Themed';
+import { StyleSheet } from 'react-native';
+import { View } from '../components/Themed';
 import UploadService from "../services/FileUploadService";
-import IFile from "../domain/pages/index";
+import { IFile } from "../domain/pages/index";
 
 interface Props {
     currentFile: File | undefined;

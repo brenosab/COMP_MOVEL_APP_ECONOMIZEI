@@ -1,38 +1,61 @@
-import { SafeAreaView, StyleSheet, Dimensions } from 'react-native';
+import { SafeAreaView, StyleSheet, Dimensions, Pressable } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import { Feather } from '@expo/vector-icons';
 import http from "../../http-common";
 import React, { useState, useCallback, useEffect } from 'react';
 import { BaseModalState } from '../../domain/pages/index';
 import BaseModal from "../../components/Modal";
-import { TypeValue } from '../../domain/enums/index';
+import Form from "../../pages/Form";
 import { ROUTE } from "../../constants/config";
 import { useIsFocused } from "@react-navigation/native";
+import { ItemApi } from '../../domain/api/index';
+import { FormProps } from '../../domain/pages/index';
 
 const initModal: BaseModalState = {
   message: "Ok!",
   title: "",
   modalIsOpen: false,
 };
+const initForm: FormProps = {
+  list: [],
+  title: "",
+  isOpen: false,
+};
+const formatNumber = (data: number) => {
+  const value = data.toFixed(2);
+  return value.replace('.',',');
+}
 
-export default function TabLayout() {
+const TabLayout = () => {
   const [modal, setModal] = useState<BaseModalState>(initModal);
-  const [sumDespesa, setSumDespesa] = useState<number>(0.00);
-  const [sumReceita, setSumReceita] = useState<number>(0.00);
+  const [sumDespesa, setSumDespesa] = useState<string>('0,00');
+  const [sumReceita, setSumReceita] = useState<string>('0,00');
   const isFocused = useIsFocused();
+  const [form, setForm] = useState<FormProps>(initForm);
 
   useEffect(() => {
     getSumDespesa();
     getSumReceita();
-    console.log('teste');
   }, [isFocused]);
+
+  const getItens = useCallback((type: string) => {
+    console.log('testes');
+    var response: Promise<any> = http.get("/" + type);
+    response.then((res) => {
+      let list: ItemApi[] = res.data;
+      console.log(list);
+      setForm({ ...form, list: list, isOpen: true, title: type });
+    })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [setForm]);
 
   const getSumDespesa = useCallback(() => {
     var response: Promise<any> = http.get("/" + ROUTE.API.DESPESA + "/sum");
     response.then((res) => {
       let valor = res.data[0]?.valor == undefined ? 0.00 : res.data[0]?.valor;
-      console.log(valor);
-      setSumDespesa(valor);
+      setSumDespesa(formatNumber(valor));
     })
       .catch((err) => {
         console.log(err);
@@ -43,8 +66,7 @@ export default function TabLayout() {
     var response: Promise<any> = http.get("/" + ROUTE.API.RECEITA + "/sum");
     response.then((res) => {
       let valor = res.data[0]?.valor == undefined ? 0.00 : res.data[0]?.valor;
-      console.log(valor);
-      setSumReceita(valor);
+      setSumReceita(formatNumber(valor));
     })
       .catch((err) => {
         console.log(err);
@@ -53,6 +75,9 @@ export default function TabLayout() {
 
   const setModalVisible = useCallback((value: boolean) => {
     setModal({ ...initModal, modalIsOpen: value });
+  }, []);
+  const setVisible = useCallback((value: boolean) => {
+    setForm({ ...initForm, isOpen: value });
   }, []);
 
   return (
@@ -79,21 +104,32 @@ export default function TabLayout() {
           </View>
         </View>
         <View style={{ flex: 10 }}>
-          <View style={styles.dashBoard}>
+          <View style={[styles.dashBoard, { flex: 1 }]}>
             <Text style={[styles.text]}>DashBoards</Text>
           </View>
+          <View style={[styles.getStartedContainer, { flex: 1 }]}>
+            <Pressable style={[styles.buttonSave, { backgroundColor: 'rgb(60, 179, 113)' }]} onPress={() => getItens('receita')}>
+              <Text style={[styles.text, { color: 'white' }]}>{'Receitas'}</Text>
+            </Pressable>
+          </View>
+          <View style={[styles.getStartedContainer, { flex: 1 }]}>
+            <Pressable style={[styles.buttonSave, { backgroundColor: 'rgba(255, 99, 71, 0.8)', }]} onPress={() => getItens('despesa')}>
+              <Text style={[styles.text, { color: 'white' }]}>{'Despesas'}</Text>
+            </Pressable>
+          </View>
         </View>
-        {/* <View style={[styles.getStartedContainer, { flex: 2 }]}>
-          <Pressable style={styles.buttonSave} onPress={getInfo}>
-            <Text style={[styles.text, { color: 'white' }]}>{'Adicionar'}</Text>
-          </Pressable>
-        </View> */}
       </View>
       <BaseModal
         message={modal.message}
         title=''
         modalIsOpen={modal.modalIsOpen}
         setModalVisible={setModalVisible}
+      />
+      <Form
+        title={form.title}
+        list={form.list}
+        isOpen={form.isOpen}
+        setVisible={setVisible}
       />
     </SafeAreaView>
   );
@@ -126,6 +162,7 @@ const styles = StyleSheet.create({
   getStartedContainer: {
     alignItems: 'center',
     marginHorizontal: 10,
+    paddingBottom: 5,
     color: 'white'
   },
   menuIcon: {
@@ -191,13 +228,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   buttonSave: {
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
+    width: '50%',
     paddingVertical: 12,
     paddingHorizontal: 32,
     borderRadius: 4,
     elevation: 3,
-    backgroundColor: 'blue',
   },
   text: {
     fontSize: 17,
@@ -206,4 +243,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.25,
     color: 'black',
   },
-});  
+});
+
+export default TabLayout;

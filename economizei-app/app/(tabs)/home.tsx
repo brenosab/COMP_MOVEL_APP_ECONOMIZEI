@@ -1,7 +1,5 @@
 import { StyleSheet, StatusBar } from 'react-native';
-
-import EditScreenInfo from '../../components/EditScreenInfo';
-import { Text, View } from '../../components/Themed';
+import { View } from '../../components/Themed';
 import { SafeAreaView } from 'react-native';
 import TabLayout from '../home/_layout';
 
