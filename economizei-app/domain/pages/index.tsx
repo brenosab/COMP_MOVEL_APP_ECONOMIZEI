@@ -52,10 +52,14 @@ export interface FormProps {
     list: ItemApi[];
     title: string;
     isOpen: boolean;
+    type: string;
 };
 
 export type RootStackParamList = {
     'Home': {},
+    'Item': {
+        id: string,
+    }
     'Form': {
       list: ItemApi[],
       title: string,

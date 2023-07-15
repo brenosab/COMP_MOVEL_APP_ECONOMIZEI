@@ -20,10 +20,11 @@ const initForm: FormProps = {
   list: [],
   title: "",
   isOpen: false,
+  type: '',
 };
 const formatNumber = (data: number) => {
   const value = data.toFixed(2);
-  return value.replace('.',',');
+  return value.replace('.', ',');
 }
 
 const TabLayout = () => {
@@ -38,16 +39,29 @@ const TabLayout = () => {
     getSumReceita();
   }, [isFocused]);
 
-  const getItens = useCallback((type: string) => {
-    console.log('testes');
-    var response: Promise<any> = http.get("/" + type);
-    response.then((res) => {
-      let list: ItemApi[] = res.data;
-      console.log(list);
-      setForm({ ...form, list: list, isOpen: true, title: type });
+  const deleteById = useCallback((id: string) => {
+    let type = form.type;
+    let route = type === 'despesa' ? ROUTE.API.DESPESA : ROUTE.API.RECEITA;
+    var response: Promise<any> = http.delete("/" + route + "/" + id);
+    response.then(() => {
+      setModal({ ...modal, message: type + ' removida!', modalIsOpen: true });
+      setForm(initForm);
     })
       .catch((err) => {
         console.log(err);
+        setModal({ ...modal, message: err, modalIsOpen: true });
+      });
+  }, [setForm]);
+
+  const getItens = useCallback((type: string) => {
+    var response: Promise<any> = http.get("/" + type);
+    response.then((res) => {
+      let list: ItemApi[] = res.data;
+      setForm({ ...form, list: list, isOpen: true, title: type.toUpperCase(), type: type });
+    })
+      .catch((err) => {
+        console.log(err);
+        setModal({ ...modal, message: err, modalIsOpen: true });
       });
   }, [setForm]);
 
@@ -59,6 +73,7 @@ const TabLayout = () => {
     })
       .catch((err) => {
         console.log(err);
+        setModal({ ...modal, message: err, modalIsOpen: true });
       });
   }, [setSumDespesa]);
 
@@ -70,16 +85,24 @@ const TabLayout = () => {
     })
       .catch((err) => {
         console.log(err);
+        setModal({ ...modal, message: err, modalIsOpen: true });
       });
   }, [setSumReceita]);
 
   const setModalVisible = useCallback((value: boolean) => {
     setModal({ ...initModal, modalIsOpen: value });
   }, []);
+  const deleteItem = useCallback((id: string) => {
+    deleteById(id);
+  }, []);
+  const editItem = useCallback((id: string) => {
+    // props.history.push("/some/Path");
+
+    // setForm({ ...initForm, isOpen: value });
+  }, []);
   const setVisible = useCallback((value: boolean) => {
     setForm({ ...initForm, isOpen: value });
   }, []);
-
   return (
     <SafeAreaView>
       <View style={styles.main}>
@@ -130,6 +153,8 @@ const TabLayout = () => {
         list={form.list}
         isOpen={form.isOpen}
         setVisible={setVisible}
+        deleteItem={deleteItem}
+        editItem={editItem}
       />
     </SafeAreaView>
   );

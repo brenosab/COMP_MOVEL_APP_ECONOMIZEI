@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, SafeAreaView, Dimensions } from 'react-native';
 import { Text, View } from '../components/Themed';
 import Dropdown from '../components/Dropdown';
@@ -8,13 +8,15 @@ import { Categoria } from '../domain/enums/index';
 import '@env';
 import DateInput from '../components/DateInput';
 import DecimalInput from '../components/DecimalInput';
-import FileInput from '../components/FileInput';
 import {
   criarServicoDeValidacao,
   esquemaDeValidacao,
 } from "./validation";
 import http from "../http-common";
 import { ROUTE } from "../constants/config";
+import { ItemApi } from '../domain/api/index';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../domain/pages/index';
 
 const initForm: DespesaPage = {
   valor: 0.00,
@@ -35,10 +37,52 @@ const categorias: Item[] = [
   { id: 3, descricao: Categoria.LAZER }
 ];
 
-const AddDespesa = () => {
+export interface Props {
+  id: string;
+};
+const AddDespesa = (props: Props) => {
   const [form, setForm] = useState<DespesaPage>(initForm);
   const [anexo, setAnexo] = useState<File | undefined>();
   const [modal, setModal] = useState<BaseModalState>(initModal);
+
+  useEffect(() => {
+    console.log(props.id);
+    if (props.id) {
+      getById(props.id);
+    }
+  },[]);
+
+  const getCategoria = (categoria: string) => {
+    switch(categoria.toLowerCase()){
+      case 'compras':
+        return Categoria.COMPRAS;
+      case 'conta fixa':
+        return Categoria.CONTA_FIXA;
+      case 'lazer':
+        return Categoria.LAZER;
+      default:
+        return Categoria.COMPRAS;
+    }
+  }
+  
+  const getById = useCallback((id: string) => {
+    var response: Promise<any> = http.get("/" + ROUTE.API.DESPESA + "/" + id);
+    response.then((res) => {
+      let item: ItemApi = res.data;
+      setForm({
+        ...form,
+        valor: item.valor,
+        descricao: item.descricao,
+        categoria: getCategoria(item.categoria),
+        data: item.data
+      });
+    })
+      .catch((err) => {
+        console.log(err);
+        setModal({ ...modal, message: err, modalIsOpen: true });
+      });
+  }, [setForm]);
+
 
   const post = (data: DespesaPage) => {
     var response: Promise<any> = http.post("/"+ ROUTE.API.DESPESA, data);

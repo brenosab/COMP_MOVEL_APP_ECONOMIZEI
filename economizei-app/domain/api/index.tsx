@@ -1,4 +1,5 @@
 export interface ItemApi {
+    _id: string;
     valor: number;
     categoria: string;
     data: string;

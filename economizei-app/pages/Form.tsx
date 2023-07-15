@@ -9,6 +9,8 @@ export interface FormModelProps {
     title: string;
     isOpen: boolean;
     setVisible: (props: boolean) => void;
+    deleteItem: (props: string) => void;
+    editItem: (props: string) => void;
 };
 const formatData = (data: string) => {
     const date = new Date(data);
@@ -18,13 +20,17 @@ const formatNumber = (data: number) => {
     const number = data.toFixed(2);
     return 'R$ ' + number.replace('.',',');
 }
+
 const Form = (props: FormModelProps) => {
     const {
         title,
         isOpen,
         setVisible,
+        editItem,
+        deleteItem,
         list
     } = props;
+
     return (
         <SafeAreaView style={styles.container}>
             <Modal
@@ -55,21 +61,24 @@ const Form = (props: FormModelProps) => {
                                     onPress={() => { console.log(value) }}
                                     key={index}
                                 >
-                                    <View style={[styles.column, { flex: 6 }]}>
+                                    <View style={[styles.column, { flex: 4 }]}>
                                         <Text style={[styles.number]}>{formatNumber(value.valor)}</Text>
                                     </View>
-                                    <View style={[styles.column, { flex: 4 }]}>
+                                    <View style={[styles.column, { flex: 2 }]}>
                                         <Text style={styles.text}>{value.categoria}</Text>
                                     </View>
-                                    <View style={[styles.column, { flex: 4 }]}>
+                                    <View style={[styles.column, { flex: 2 }]}>
                                         <Text style={styles.text}>{value.descricao}</Text>
                                     </View>
-                                    <View style={[styles.column, { flex: 4 }]}>
+                                    <View style={[styles.column, { flex: 3 }]}>
                                         <Text style={styles.text}>{formatData(value.data)}</Text>
                                     </View>
                                     <View style={[styles.column, { flex: 1 }]}>
-                                        <Feather name='chevron-right' size={20} color="black" />
+                                        <Feather name='edit' size={20} color="black" onPress={() => editItem(value._id)}/>
                                     </View>
+                                    {/* <View style={[styles.column, { flex: 1 }]}>
+                                        <Feather name='trash' size={20} color="black" onPress={() => deleteItem(value._id)}/>
+                                    </View> */}
                                 </TouchableOpacity>)
                         }</>
                     </View>
