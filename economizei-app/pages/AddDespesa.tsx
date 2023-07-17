@@ -15,8 +15,6 @@ import {
 import http from "../http-common";
 import { ROUTE } from "../constants/config";
 import { ItemApi } from '../domain/api/index';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../domain/pages/index';
 
 const initForm: DespesaPage = {
   valor: 0.00,
@@ -24,7 +22,7 @@ const initForm: DespesaPage = {
   descricao: "",
   data: "2021-10-09",
   anexo: "",
-  modalIsOpen: false,
+  modalIsOpen: false
 };
 const initModal: BaseModalState = {
   message: "Adicionado!",
@@ -46,14 +44,13 @@ const AddDespesa = (props: Props) => {
   const [modal, setModal] = useState<BaseModalState>(initModal);
 
   useEffect(() => {
-    console.log(props.id);
     if (props.id) {
       getById(props.id);
     }
-  },[]);
+  }, []);
 
   const getCategoria = (categoria: string) => {
-    switch(categoria.toLowerCase()){
+    switch (categoria.toLowerCase()) {
       case 'compras':
         return Categoria.COMPRAS;
       case 'conta fixa':
@@ -64,7 +61,7 @@ const AddDespesa = (props: Props) => {
         return Categoria.COMPRAS;
     }
   }
-  
+
   const getById = useCallback((id: string) => {
     var response: Promise<any> = http.get("/" + ROUTE.API.DESPESA + "/" + id);
     response.then((res) => {
@@ -81,13 +78,12 @@ const AddDespesa = (props: Props) => {
         console.log(err);
         setModal({ ...modal, message: err, modalIsOpen: true });
       });
-  }, [setForm]);
+  }, [setForm, form]);
 
 
   const post = (data: DespesaPage) => {
-    var response: Promise<any> = http.post("/"+ ROUTE.API.DESPESA, data);
+    var response: Promise<any> = http.post("/" + ROUTE.API.DESPESA, data);
     response.then((res) => {
-      console.log(res.data);
       return res.data;
     })
       .catch((err) => {
@@ -95,33 +91,33 @@ const AddDespesa = (props: Props) => {
         return err;
       });
   };
-
+  const put = (data: DespesaPage, id: string) => {
+    var response: Promise<any> = http.put("/" + ROUTE.API.DESPESA + "/" + id, data);
+    response.then((res) => {
+      return res.data;
+    })
+      .catch((err) => {
+        console.log(err);
+        return err;
+      });
+  };
   const salvarDespesa = useCallback((data: DespesaPage) => {
     const objValidacao = criarServicoDeValidacao(data);
     esquemaDeValidacao
       .validate(objValidacao)
       .then((_) => {
-        console.log(data);
-        var response = post(data);
-        console.log(response);
-        setModal({ ...modal, message: 'Despesa Adicionada!', modalIsOpen: true });
+        props.id !== '' ? put(data, props.id) : post(data);
+        setModal({
+          ...modal,
+          message: 'Despesa ' + (props.id !== '' ? 'Atualizada!' : 'Adicionada!'),
+          modalIsOpen: true
+        });
         setForm(initForm);
       })
       .catch((err) => {
         var msg: string = err.errors[0];
         setModal({ ...modal, message: msg, modalIsOpen: true });
-        console.log(msg);
       });
-
-    //**** MOCK API */
-    // axios.post<Atleta>(baseUrl + ROUTE.API.DESPESA, data)
-    //   .then((res) => {
-    //     console.log(res);
-    //     setForm({ ...form, modalIsOpen: true });
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
   }, [setForm, setModal, modal]);
 
   const setValor = useCallback((props: number) => {
@@ -142,8 +138,7 @@ const AddDespesa = (props: Props) => {
   // }, [setForm, form]);
   const setModalVisible = useCallback((value: boolean) => {
     setModal({ ...initModal, modalIsOpen: value });
-  }, [setForm, form]);
-
+  }, [setModal]);
   const onIncrement = () => salvarDespesa(form);
 
   const selectFile = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -205,7 +200,7 @@ const AddDespesa = (props: Props) => {
       </View>
       <View style={[styles.getStartedContainer, { flex: 1 }]}>
         <Pressable style={styles.buttonSave} onPress={onIncrement}>
-          <Text style={styles.text}>{'Adicionar'}</Text>
+          <Text style={styles.text}>{props.id !== '' ? 'Atualizar' : 'Adicionar'}</Text>
         </Pressable>
       </View>
       <BaseModal

@@ -53,6 +53,9 @@ export interface FormProps {
     title: string;
     isOpen: boolean;
     type: string;
+    isForm: boolean;
+    idItem: string;
+    modalDeleteIsOpen: boolean;
 };
 
 export type RootStackParamList = {

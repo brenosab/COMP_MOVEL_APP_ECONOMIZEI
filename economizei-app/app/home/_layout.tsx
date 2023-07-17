@@ -1,4 +1,4 @@
-import { SafeAreaView, StyleSheet, Dimensions, Pressable } from 'react-native';
+import { SafeAreaView, StyleSheet, Dimensions, Pressable, Modal } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import { Feather } from '@expo/vector-icons';
 import http from "../../http-common";
@@ -10,6 +10,8 @@ import { ROUTE } from "../../constants/config";
 import { useIsFocused } from "@react-navigation/native";
 import { ItemApi } from '../../domain/api/index';
 import { FormProps } from '../../domain/pages/index';
+import AddDespesa from '../../pages/AddDespesa';
+import AddReceita from '../../pages/AddReceita';
 
 const initModal: BaseModalState = {
   message: "Ok!",
@@ -21,6 +23,9 @@ const initForm: FormProps = {
   title: "",
   isOpen: false,
   type: '',
+  isForm: false,
+  idItem: '',
+  modalDeleteIsOpen: false
 };
 const formatNumber = (data: number) => {
   const value = data.toFixed(2);
@@ -45,13 +50,13 @@ const TabLayout = () => {
     var response: Promise<any> = http.delete("/" + route + "/" + id);
     response.then(() => {
       setModal({ ...modal, message: type + ' removida!', modalIsOpen: true });
-      setForm(initForm);
+      setForm({...initForm});
     })
       .catch((err) => {
         console.log(err);
         setModal({ ...modal, message: err, modalIsOpen: true });
       });
-  }, [setForm]);
+  }, [setForm, form, setModal]);
 
   const getItens = useCallback((type: string) => {
     var response: Promise<any> = http.get("/" + type);
@@ -93,16 +98,17 @@ const TabLayout = () => {
     setModal({ ...initModal, modalIsOpen: value });
   }, []);
   const deleteItem = useCallback((id: string) => {
-    deleteById(id);
-  }, []);
+    setForm({ ...form, modalDeleteIsOpen: true, idItem: id });
+  }, [form]);
   const editItem = useCallback((id: string) => {
-    // props.history.push("/some/Path");
-
-    // setForm({ ...initForm, isOpen: value });
-  }, []);
+    setForm({ ...form, isForm: true, idItem: id });
+  }, [form]);
   const setVisible = useCallback((value: boolean) => {
     setForm({ ...initForm, isOpen: value });
   }, []);
+  const setDeleteModalVisible = useCallback((value: boolean) => {
+    setForm({ ...form, modalDeleteIsOpen: value });
+  }, [setForm, form]);
   return (
     <SafeAreaView>
       <View style={styles.main}>
@@ -156,12 +162,71 @@ const TabLayout = () => {
         deleteItem={deleteItem}
         editItem={editItem}
       />
+      {form.isForm && (
+        form.type == 'despesa' ? (
+          <Modal style={styles.modal}
+            animationType="slide"
+            transparent={true}
+            visible={true}
+            onRequestClose={() => {
+              setVisible(false);
+            }}>
+            <AddDespesa id={form.idItem} />
+          </Modal>
+        ) : (
+          <Modal style={styles.modal}
+            animationType="slide"
+            transparent={true}
+            visible={true}
+            onRequestClose={() => {
+              setVisible(false);
+            }}>
+            <AddReceita id={form.idItem} />
+          </Modal>
+        )
+      )}
+      <Modal
+        animationType="slide"
+        visible={form.modalDeleteIsOpen}
+        onRequestClose={() => {
+          setModalVisible(!form.modalDeleteIsOpen);
+        }}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>{'Deseja excluir a despesa?'}</Text>
+            <View style={{ flexDirection: 'row' }}>
+              <View>
+                <Pressable
+                  style={[styles.buttonClose, {backgroundColor: "#22252D",}]}
+                  onPress={() => deleteById(form.idItem)}>
+                  <Text style={styles.textStyle}>Confirmar</Text>
+                </Pressable>
+              </View>
+              <View>
+                <Pressable
+                  style={[styles.buttonClose, {backgroundColor: '#2196F3',}]}
+                  onPress={() => setDeleteModalVisible(!form.modalDeleteIsOpen)}>
+                  <Text style={styles.textStyle}>Fechar</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View></View>
+      </Modal>
     </SafeAreaView>
   );
 }
 
 const dimScreen = Dimensions.get("screen");
 const styles = StyleSheet.create({
+  modal: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
+    marginTop: 30,
+    padding: 20,
+    width: dimScreen.width,
+    height: dimScreen.height,
+  },
   main: {
     flexDirection: 'column',
     flex: 1,
@@ -267,6 +332,43 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 0.25,
     color: 'black',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  buttonClose: {
+    borderRadius: 10,
+    padding: 5,
+    margin: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
 });
 

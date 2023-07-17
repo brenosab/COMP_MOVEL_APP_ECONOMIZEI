@@ -1,8 +1,7 @@
-import React, { useCallback, useState } from 'react';
-import { Pressable, StyleSheet, TextInput, SafeAreaView, Dimensions } from 'react-native';
+import React, { useCallback, useState, useEffect } from 'react';
+import { Pressable, StyleSheet, TextInput, SafeAreaView } from 'react-native';
 import { Text, View } from '../components/Themed';
 import Dropdown from '../components/Dropdown';
-import axios from 'axios';
 import BaseModal from "../components/Modal";
 import { ROUTE } from "../constants/config";
 import { ReceitaPage, Item, BaseModalState } from '../domain/pages/index';
@@ -15,6 +14,7 @@ import {
   esquemaDeValidacaoReceita,
 } from "./validation";
 import http from "../http-common";
+import { ItemApi } from '../domain/api/index';
 
 const initForm: ReceitaPage = {
   valor: 0.00,
@@ -34,14 +34,63 @@ const categorias: Item[] = [
   { id: 3, descricao: Categoria.LAZER }
 ];
 
-const AddReceita = () => {
+export interface Props {
+  id: string;
+};
+const AddReceita = (props: Props) => {
   const [form, setForm] = useState<ReceitaPage>(initForm);
   const [modal, setModal] = useState<BaseModalState>(initModal);
+
+  useEffect(() => {
+    if (props.id) {
+      getById(props.id);
+    }
+  },[]);
+
+  const getCategoria = (categoria: string) => {
+    switch(categoria.toLowerCase()){
+      case 'compras':
+        return Categoria.COMPRAS;
+      case 'conta fixa':
+        return Categoria.CONTA_FIXA;
+      case 'lazer':
+        return Categoria.LAZER;
+      default:
+        return Categoria.COMPRAS;
+    }
+  }
+
+  const getById = useCallback((id: string) => {
+    var response: Promise<any> = http.get("/" + ROUTE.API.RECEITA + "/" + id);
+    response.then((res) => {
+      let item: ItemApi = res.data;
+      setForm({
+        ...form,
+        valor: item.valor,
+        descricao: item.descricao,
+        categoria: getCategoria(item.categoria),
+        data: item.data
+      });
+    })
+      .catch((err) => {
+        console.log(err);
+        setModal({ ...modal, message: err, modalIsOpen: true });
+      });
+  }, [setForm, form]);
 
   const post = (data: ReceitaPage) => {
     var response: Promise<any> = http.post("/"+ ROUTE.API.RECEITA, data);
     response.then((res) => {
-      console.log(res.data);
+      return res.data;
+    })
+      .catch((err) => {
+        console.log(err);
+        return err;
+      });
+  };
+  const put = (data: ReceitaPage, id: string) => {
+    var response: Promise<any> = http.put("/"+ ROUTE.API.RECEITA + "/" + id, data);
+    response.then((res) => {
       return res.data;
     })
       .catch((err) => {
@@ -56,9 +105,11 @@ const AddReceita = () => {
       .validate(objValidacao)
       .then((_) => {
         console.log(data);
-        var response = post(data);
-        console.log(response);
-        setModal({ ...modal, message: 'Receita Adicionada!', modalIsOpen: true });
+
+        props.id !== '' ? put(data, props.id) : post(data);
+        setModal({ ...modal, 
+          message: 'Receita ' + (props.id !== '' ? 'Atualizada!' : 'Adicionada!'), 
+          modalIsOpen: true });
         setForm(initForm);
       })
       .catch((err) => {
@@ -66,16 +117,6 @@ const AddReceita = () => {
         setModal({ ...modal, message: msg, modalIsOpen: true });
         console.log(msg);
       });
-
-    //**** MOCK API */
-    // axios.post<Atleta>(baseUrl + ROUTE.API.RECEITA, data)
-    //   .then((res) => {
-    //     console.log(res);
-    //     setForm({ ...form, modalIsOpen: true });
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
   }, [setForm, setModal, modal]);
 
   const setValor = useCallback((props: number) => {
@@ -140,7 +181,7 @@ const AddReceita = () => {
       </View>
       <View style={[styles.getStartedContainer, { flex: 1 }]}>
         <Pressable style={styles.buttonSave} onPress={onIncrement}>
-          <Text style={styles.text}>{'Adicionar'}</Text>
+          <Text style={styles.text}>{props.id !== '' ? 'Atualizar' : 'Adicionar'}</Text>
         </Pressable>
       </View>
       <BaseModal

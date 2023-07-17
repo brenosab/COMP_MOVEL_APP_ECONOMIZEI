@@ -3,6 +3,7 @@ import { StyleSheet, SafeAreaView, Modal, TouchableOpacity, Pressable, Dimension
 import { Text, View } from '../components/Themed';
 import { Feather } from '@expo/vector-icons';
 import { ItemApi } from '../domain/api/index';
+import { Link } from 'expo-router';
 
 export interface FormModelProps {
     list: ItemApi[];
@@ -18,7 +19,7 @@ const formatData = (data: string) => {
 }
 const formatNumber = (data: number) => {
     const number = data.toFixed(2);
-    return 'R$ ' + number.replace('.',',');
+    return 'R$ ' + number.replace('.', ',');
 }
 
 const Form = (props: FormModelProps) => {
@@ -40,7 +41,7 @@ const Form = (props: FormModelProps) => {
                 onRequestClose={() => {
                     setVisible(!isOpen);
                 }}>
-                <View style={[styles.row, {flex: 1}]}>
+                <View style={[styles.row, { flex: 1 }]}>
                     <View style={{ flex: 4 }}>
                         <Text style={styles.textTitle}>{title}</Text>
                     </View>
@@ -52,7 +53,7 @@ const Form = (props: FormModelProps) => {
                         </Pressable>
                     </View>
                 </View>
-                <View style={[styles.row, {flex: 10}]}>
+                <View style={[styles.row, { flex: 10 }]}>
                     <View style={styles.menuBox}><>
                         {
                             list.map((value, index) =>
@@ -61,24 +62,24 @@ const Form = (props: FormModelProps) => {
                                     onPress={() => { console.log(value) }}
                                     key={index}
                                 >
-                                    <View style={[styles.column, { flex: 4 }]}>
+                                    <View style={[styles.column, { flex: 5 }]}>
                                         <Text style={[styles.number]}>{formatNumber(value.valor)}</Text>
                                     </View>
-                                    <View style={[styles.column, { flex: 2 }]}>
+                                    <View style={[styles.column, { flex: 3 }]}>
                                         <Text style={styles.text}>{value.categoria}</Text>
                                     </View>
-                                    <View style={[styles.column, { flex: 2 }]}>
+                                    <View style={[styles.column, { flex: 3 }]}>
                                         <Text style={styles.text}>{value.descricao}</Text>
                                     </View>
-                                    <View style={[styles.column, { flex: 3 }]}>
+                                    <View style={[styles.column, { flex: 4 }]}>
                                         <Text style={styles.text}>{formatData(value.data)}</Text>
                                     </View>
                                     <View style={[styles.column, { flex: 1 }]}>
                                         <Feather name='edit' size={20} color="black" onPress={() => editItem(value._id)}/>
                                     </View>
-                                    {/* <View style={[styles.column, { flex: 1 }]}>
+                                    <View style={[styles.column, { flex: 1 }]}>
                                         <Feather name='trash' size={20} color="black" onPress={() => deleteItem(value._id)}/>
-                                    </View> */}
+                                    </View>
                                 </TouchableOpacity>)
                         }</>
                     </View>
